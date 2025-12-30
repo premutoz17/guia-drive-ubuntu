@@ -1,38 +1,88 @@
-# 📂 Integración definitiva de Google Drive en Ubuntu
-
-## Acceso estable bajo demanda con rclone  
-**Caché local: 60 GB · Persistencia offline: 14 días**
-
-Guía paso a paso para montar Google Drive en Linux como una carpeta local,
-priorizando **integridad de datos**, **tolerancia a fallos de red** y **uso a largo plazo**.
-
----
+# 📂 Integración de Google Drive en Ubuntu
 
 ## 0. ¿Qué hace exactamente esta configuración?
 
-Al finalizar, tendrás una carpeta:
+Al finalizar, tendrás una carpeta especial llamada `GoogleDrive`. Esa carpeta **no es una copia completa** de tu Google Drive, es una carpeta que te permite **abrir, editar y guardar archivos desde tu computadora**, mientras rclone se encarga de sincronizarlos con Google Drive de forma segura.
 
-    ~/GoogleDrive
+### Comportamiento general
 
-Esa carpeta funciona como un **disco híbrido**:
+Esta configuración sigue reglas claras y consistentes:
 
-- Los archivos se descargan solo cuando los usas
-- Se guardan primero en tu SSD local
-- Permanecen disponibles 14 días, incluso sin internet
-- Los cambios se suben a Google Drive automáticamente cuando hay conexión
+- 💻 **Edición desde la computadora (uso principal)**  
+  Cuando abres o editas un archivo dentro de la carpeta `GoogleDrive`:
+  - el archivo se descarga
+  - lo editas **con los programas instalados en tu computadora**
+  - el cambio se guarda primero en tu disco duro (SSD)
+  - si hay conexión, rclone **sube el archivo modificado** a Google Drive  
+  (Para ti, el archivo se comporta como cualquier archivo local.)
 
-### ❌ Esto NO es
+- 📥 **Descarga bajo demanda**  
+  Ningún archivo se descarga automáticamente.  
+  Un archivo solo se descarga cuando:
+  - lo abres
+  - lo copias
+  - lo editas
+  - un programa lo necesita
 
-- No descarga todo tu Drive
-- No es sincronización tipo Dropbox
-- No es edición en tiempo real como Google Docs
-- No reemplaza un respaldo (backup)
+- 💾 **Caché local limitada (60 GB)**  
+  Los archivos usados se almacenan temporalmente en tu disco.  
+  La caché puede ocupar **hasta 60 GB**.  
+  Cuando se alcanza ese límite, rclone elimina del disco local los archivos **menos usados o más antiguos**, sin afectar los archivos en Google Drive.
+
+- ⏳ **Disponibilidad sin internet (14 días)**  
+  Una vez descargado, un archivo permanece disponible **hasta 14 días**, incluso sin conexión.  
+  Si lo vuelves a usar dentro de ese periodo, el tiempo se renueva automáticamente.
+
+- 🌐 **Tolerancia a fallos de red**  
+  Si la conexión se interrumpe mientras trabajas:
+  - los cambios se guardan localmente
+  - la sincronización se reanuda automáticamente cuando vuelve el internet  
+  No necesitas intervenir.
+
+### ¿Qué pasa si editas desde otro lugar?
+
+Esta configuración **sí detecta cambios externos**, pero con un comportamiento específico:
+
+- 🌍 **Edición desde la página web de Google Drive**  
+  Si editas un archivo desde el navegador:
+  - el cambio se guarda directamente en la nube
+  - rclone **no descarga el archivo automáticamente** a tu computadora
+  - el archivo se descargará **la próxima vez que lo abras o lo uses desde `~/GoogleDrive`**  
+  Es decir, verás la versión actualizada cuando accedas al archivo.
+
+- 📱 **Edición desde el teléfono o tablet**  
+  El comportamiento es el mismo que desde el navegador:
+  - los cambios se guardan en Google Drive
+  - rclone no los baja hasta que los necesites localmente
+  - cuando abras el archivo en tu computadora, se descargará la versión más reciente
+
+- ⚠️ **Ediciones simultáneas**  
+  Si editas el mismo archivo **al mismo tiempo**:
+  - una copia local en tu computadora
+  - y otra desde la web o el teléfono  
+  Google Drive puede crear un archivo duplicado para evitar sobrescritura.  
+  Esto es un comportamiento normal del servicio, no un error de rclone.
+
+### Qué NO hace esta configuración
+
+Para evitar malentendidos:
+
+- ❌ No descarga todo tu Drive
+- ❌ No mantiene todos los archivos siempre en tu computadora
+- ❌ No sincroniza cambios en tiempo real
+- ❌ No es edición colaborativa en vivo
+- ❌ No sustituye un sistema de respaldo independiente
+
+### En pocas palabras
+
+> Trabajas **desde tu computadora** como siempre.  
+> Rclone se encarga de descargar lo necesario, guardar los cambios localmente y sincronizarlos cuando puede, sin que tengas que preocuparte por la conexión.
 
 ---
 
 ## 1. Requisitos
 
-- Ubuntu 22.04 LTS o 24.04 LTS
+- Ubuntu 24.04 LTS o superior
 - Cuenta de Google Drive
 - Conexión a internet (solo para configurar)
 - Al menos 60 GB libres en disco
@@ -64,15 +114,17 @@ Responde exactamente así en el asistente interactivo:
 
 1. `n` → New remote  
 2. **name:** `remote`  
-3. **Storage:** Google Drive  
+3. **Storage:** Selecciona Google Drive (número 22, pero verifica) 
 4. **Client ID:** Enter  
 5. **Client Secret:** Enter  
-6. **Scope:** opción `1` (Full access)  
-7. **Advanced config:** `n`  
-8. **Auto config:** `y`  
+6. **Scope:** opción `1` (Full access)
+7. **service_account_file:** Enter
+8. **Advanced config:** `n`  
+9. **Auto config:** `y`  
    (Se abrirá el navegador, inicia sesión y autoriza)
-9. Confirma con `y`
-10. Sal con `q`
+10. Confirma con `y`
+11. Confirma con `y`
+12. Sal con `q`
 
 ---
 
