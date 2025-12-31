@@ -246,7 +246,7 @@ Si deseas revertir todos los cambios y eliminar rclone de tu sistema, sigue esto
 
 **Nota técnica:** Dado que instalamos rclone manualmente con el script oficial (Paso 2), no podemos usar `apt remove`. Debemos eliminar los binarios manualmente.
 
-### 1. Detener y limpiar el servicio
+### 8.1 Detener y limpiar el servicio
 Primero detenemos el proceso para liberar los archivos. Ejecuta las siguientes instrucciones (una por una):
 
     systemctl --user stop rclone-mount.service
@@ -257,7 +257,7 @@ Ahora elimina el archivo de configuración del servicio y recarga el gestor:
     rm ~/.config/systemd/user/rclone-mount.service
     systemctl --user daemon-reload
 
-### 2. Eliminar directorios de configuración y caché
+### 8.2 Eliminar directorios de configuración y caché
 Borramos las credenciales de Google, la caché de disco y los logs.
 
 Ejecuta:
@@ -265,7 +265,7 @@ Ejecuta:
     rm -rf ~/.config/rclone
     rm -rf ~/.cache/rclone
 
-### 3. Eliminar la carpeta de montaje
+### 8.3 Eliminar la carpeta de montaje
 **⚠️ Precaución:** Asegúrate de que la carpeta `~/GoogleDrive` esté vacía. Si ves tus archivos dentro, significa que el **Paso 1** falló (el disco sigue montado).
 
 Si la carpeta está vacía, elimínala con:
@@ -274,7 +274,7 @@ Si la carpeta está vacía, elimínala con:
 
 *(Usamos `rmdir` por seguridad: si la carpeta tiene archivos, el comando fallará para evitar borrados accidentales).*
 
-### 4. Limpieza de carpetas del sistema (Opcional)
+### 8.4 Limpieza de carpetas del sistema (Opcional)
 En la instalación creamos la ruta para los servicios de usuario. Si esa carpeta ha quedado vacía tras el paso 1, podemos borrarla.
 
 Ejecuta:
@@ -283,7 +283,7 @@ Ejecuta:
 
 *(Si el comando no hace nada o da error, ignóralo; significa que tienes otros servicios de usuario ajenos a esta guía y no debemos borrar la carpeta).*
 
-### 5. Eliminar el programa rclone
+### 8.5 Eliminar el programa rclone
 Finalmente, eliminamos el ejecutable instalado por el script y su documentación.
 
 Ejecuta:
