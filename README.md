@@ -6,12 +6,10 @@ Tras la configuración, aparecerá en tu Carpeta personal una carpeta llamada `G
 
 ### Comportamiento general
 
-Esta configuración sigue reglas claras y consistentes:
-
 - 💻 **Edición desde la computadora (uso principal)**  
   Cuando abres o editas un archivo dentro de la carpeta `GoogleDrive`:
   - el archivo se descarga
-  - lo editas **con los programas instalados en tu computadora**
+  - podras editarlo **con los programas instalados en tu computadora**
   - el cambio se guarda primero en tu disco duro (SSD)
   - si hay conexión, rclone **sube el archivo modificado** a Google Drive  
   (Para ti, el archivo se comporta como cualquier archivo local.)
@@ -24,34 +22,26 @@ Esta configuración sigue reglas claras y consistentes:
   - un programa lo necesita
 
 - 💾 **Caché local limitada (60 GB)**  
-  Los archivos usados se almacenan temporalmente en tu computadora en un espacio oculto llamado **caché**. La caché puede ocupar **hasta 60 GB**.  
+  Los archivos usados se almacenan temporalmente en tu computadora en un espacio oculto llamado **caché**. La caché puede ocupar **hasta 60 GB** (es ajustable).  
   Cuando se alcanza ese límite, rclone elimina los archivos **más antiguos**, sin afectar los archivos en Google Drive.
 
 - ⏳ **Disponibilidad sin internet (14 días)**  
-  Una vez descargado, un archivo permanece disponible **hasta 14 días**, incluso sin conexión.  
-  Si lo vuelves a usar dentro de ese periodo, el tiempo se renueva automáticamente.
+  El archivo descargado se conserva hasta **14 días** (ajustable) y se puede usar sin conexión.
+Al abrirlo dentro de ese plazo, **se amplía automáticamente su disponibilidad otros 14 días**.
 
 - 🌐 **Tolerancia a fallos de red**  
   Si la conexión se interrumpe mientras trabajas:
   - los cambios se guardan localmente
-  - la sincronización se reanuda automáticamente cuando vuelve el internet  
-  No necesitas intervenir.
+  - la sincronización se reanuda automáticamente cuando vuelve el internet. No necesitas intervenir.
 
 ### ¿Qué pasa si editas desde otro lugar?
 
 Esta configuración **sí detecta cambios externos**, pero con un comportamiento específico:
 
-- 🌍 **Edición desde la página web de Google Drive**  
-  Si editas un archivo desde el navegador:
-  - el cambio se guarda directamente en la nube
-  - rclone **no descarga el archivo automáticamente** a tu computadora
-  - el archivo se descargará **la próxima vez que lo abras o lo uses desde `~/GoogleDrive`**  
-  Es decir, verás la versión actualizada cuando accedas al archivo.
-
-- 📱 **Edición desde el teléfono o tablet**  
-  El comportamiento es el mismo que desde el navegador:
+- 🌍 **Edición desde la página web de Google Drive o desde teléfono/tablet**  
+  Si editas un archivo desde el navegador (teléfono/tablet):
   - los cambios se guardan en Google Drive
-  - rclone no los baja hasta que los necesites localmente
+  - rclone **no descarga el archivo automáticamente** a tu computadora
   - cuando abras el archivo en tu computadora, se descargará la versión más reciente
 
 - ⚠️ **Ediciones simultáneas**  
@@ -60,6 +50,17 @@ Esta configuración **sí detecta cambios externos**, pero con un comportamiento
   - y otra desde la web o el teléfono  
   Google Drive puede crear un archivo duplicado para evitar sobrescritura.  
   Esto es un comportamiento normal del servicio, no un error de rclone.
+
+  - 🗑️ **Borrado y recuperación (Papelera)**
+  Al eliminar un archivo de la carpeta `GoogleDrive` sucede lo siguiente:
+  - El archivo **no se destruye**, rclone lo mueve a la **Papelera de Google Drive** (en la nube).
+  - Tienes 30 días para restaurarlo desde la web de Drive si te arrepientes.
+
+### ⚠️ **ADVERTENCIA**
+  Al guardar un archivo, el cambio es instantáneo en tu disco local, pero rclone tarda unos segundos en subirlo a la nube.
+  - **El riesgo:** Si apagas la computadora *inmediatamente* después de guardar, el archivo **queda seguro en tu disco, pero podría no llega a la nube**.
+  - **La consecuencia:** No verás la versión actualizada en tu celular u otros equipos hasta que vuelvas a encender la computadora.
+  - **Regla de oro:** Tras guardar un cambio importante, espera **30-60 segundos** antes de apagar el equipo o cerrar la tapa.
 
 ### Qué NO hace esta configuración
 
@@ -71,10 +72,6 @@ Para evitar malentendidos:
 - ❌ No es edición colaborativa en vivo
 - ❌ No sustituye un sistema de respaldo independiente
 
-### En pocas palabras
-
-> Trabajas **desde tu computadora** como siempre.  
-> Rclone se encarga de descargar lo necesario, guardar los cambios localmente y sincronizarlos cuando puede, sin que tengas que preocuparte por la conexión.
 
 ---
 
