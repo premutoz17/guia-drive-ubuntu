@@ -11,9 +11,7 @@ Tras la configuración, aparecerá en tu Carpeta personal una carpeta llamada `G
   - el archivo se descarga
   - podras editarlo **con los programas instalados en tu computadora**
   - el cambio se guarda primero en tu disco duro (SSD)
-  - si hay conexión, rclone **sube el archivo modificado** a Google Drive  
-  (Para ti, el archivo se comporta como cualquier archivo local.)
-
+  - si hay conexión, rclone **sube el archivo modificado** a Google Drive
 - 📥 **Descarga bajo demanda**  
   Ningún archivo se descarga automáticamente. Un archivo solo se descarga cuando:
   - lo abres
@@ -22,8 +20,7 @@ Tras la configuración, aparecerá en tu Carpeta personal una carpeta llamada `G
   - un programa lo necesita
 
 - 💾 **Caché local limitada (60 GB)**  
-  Los archivos usados se almacenan temporalmente en tu computadora en un espacio oculto llamado **caché**. La caché puede ocupar **hasta 60 GB** (es ajustable).  
-  Cuando se alcanza ese límite, rclone elimina los archivos **más antiguos**, sin afectar los archivos en Google Drive.
+  Los archivos usados se almacenan temporalmente en tu computadora en un espacio oculto llamado **caché**. La caché puede ocupar **hasta 60 GB** (es ajustable). Cuando se alcanza ese límite, rclone elimina los archivos **más antiguos**, sin afectar los archivos en Google Drive.
 
 - ⏳ **Disponibilidad sin internet (14 días)**  
   El archivo descargado se conserva hasta **14 días** (ajustable) y se puede usar sin conexión.
@@ -38,8 +35,8 @@ Al abrirlo dentro de ese plazo, **se amplía automáticamente su disponibilidad 
 
 Esta configuración **sí detecta cambios externos**, pero con un comportamiento específico:
 
-- 🌍 **Edición desde la página web de Google Drive o desde teléfono/tablet**  
-  Si editas un archivo desde el navegador (teléfono/tablet):
+- 🌍 **Edición desde la página web de Google Drive o desde otro dispositivo**  
+  Cuando editas un archivo desde el navegador u otro dispositivo:
   - los cambios se guardan en Google Drive
   - rclone **no descarga el archivo automáticamente** a tu computadora
   - cuando abras el archivo en tu computadora, se descargará la versión más reciente
@@ -51,9 +48,9 @@ Esta configuración **sí detecta cambios externos**, pero con un comportamiento
   Google Drive puede crear un archivo duplicado para evitar sobrescritura.  
   Esto es un comportamiento normal del servicio, no un error de rclone.
 
-  - 🗑️ **Borrado y recuperación (Papelera)**
+- 🗑️ **Borrado y recuperación (Papelera)**
   Al eliminar un archivo de la carpeta `GoogleDrive` sucede lo siguiente:
-  - El archivo **no se destruye**, rclone lo mueve a la **Papelera de Google Drive** (en la nube).
+  - El archivo **no se elimina** por completo, rclone lo mueve a la **Papelera de Google Drive** (en la nube).
   - Tienes 30 días para restaurarlo desde la web de Drive si te arrepientes.
 
 ### ⚠️ **ADVERTENCIA**
@@ -86,21 +83,21 @@ Para evitar malentendidos:
 
 ## 2. Instalar rclone
 
-  Ejecuta la siguiente línea en la terminal:
+Usaremos el script oficial para asegurar la versión más reciente. Copia y pega la siguiente línea completa en la terminal y ejecutala:
 
     sudo -v && curl https://rclone.org/install.sh | sudo bash
-
-  Para verificar la instalación, comprueba la versión instalada ejecutando el comando:
+    
+Una vez termine el proceso, confirma que el sistema reconoce el programa ejecutando:
 
     rclone version
 
-Debe mostrar un número de versión (`rclone v1.xx.x`).
+Deberá aparecer la versión instalada, por ejemplo: `rclone v1.68.1-linux-amd64` (o superior).
 
 ---
 
 ## 3. Conectar Google Drive
 
-Ejecuta lo siguiente:
+Ejecuta en terminal lo siguiente:
 
     rclone config
 
@@ -122,27 +119,31 @@ Responde exactamente así en el asistente interactivo:
 
 ---
 
-## 4. Crear carpetas necesarias
+## 4. Crear las carpetas necesarias
 
-Ejecuta las siguientes líneas, una por una:
+Ejecuta estos tres comandos por separado para preparar el sistema:
 
-    mkdir -p ~/GoogleDrive
-    mkdir -p ~/.config/systemd/user
-    mkdir -p ~/.cache/rclone
+1. **Crear el punto de montaje** (aquí aparecerán tus archivos):
+   
+       mkdir -p ~/GoogleDrive
 
-- `~/GoogleDrive` → punto de montaje  
-- `systemd/user` → servicios automáticos del usuario  
-- `~/.cache/rclone` → caché y registros  
+2. **Crear el directorio de servicios** (para el arranque automático):
+   
+       mkdir -p ~/.config/systemd/user
+
+3. **Crear el directorio de trabajo** (para la caché y los logs):
+   
+       mkdir -p ~/.cache/rclone
+
+> **Nota técnica:** El parámetro `-p` asegura que el comando no falle si la carpeta ya existe, así que es seguro ejecutarlos en cualquier caso.
 
 ---
 
 ## 5. Crear el servicio automático (systemd)
 
-Este servicio monta Drive automáticamente al iniciar sesión.
-
 ### 5.1 Abrir el archivo del servicio
 
-Ejecuta en la terminal
+Ejecuta en la terminal:
 
     nano ~/.config/systemd/user/rclone-mount.service
 
@@ -188,7 +189,7 @@ Esto abre un editor de texto. Copia y pega todo el contenido siguiente dentro de
 
 ## 6. Activar el servicio
 
-Ejecuta ambos comandos, uno tras otro
+Ejecuta los siguientes comandos por separado:
 
     systemctl --user daemon-reload
     systemctl --user enable --now rclone-mount.service
@@ -215,12 +216,11 @@ También puedes abrir el explorador de archivos y entrar a `GoogleDrive`.
 
 ### 7.2 Prueba de escritura
 
-Escribe en la terminal
+Ejecuta en la terminal:
 
     echo "Prueba de sincronización" > ~/GoogleDrive/test_rclone.txt
 
-Espera unos segundos y verifica que el archivo aparezca en Google Drive
-(desde el navegador o celular).
+Espera unos segundos y verifica que el archivo aparezca en Google Drive (desde el navegador o celular).
 
 ---
 
@@ -240,7 +240,7 @@ Espera unos segundos y verifica que el archivo aparezca en Google Drive
 
 ---
 
-## 8.0 🗑️ Desinstalación y limpieza total
+## 8. 🗑️ Desinstalación y limpieza total
 
 Si deseas revertir todos los cambios y eliminar rclone de tu sistema, sigue estos pasos en orden estricto.
 
